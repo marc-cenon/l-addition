@@ -108,7 +108,7 @@ terraform init	# initialisation du backend terraform et du provider helm
 terraform plan	# visualisation du plan d'execution de terraform
 terraform apply	# application du plan d'execution de terraform
 ```
-- on peura détruire et reconstruire l'environnement avec la commande :
+- on pourra détruire et reconstruire l'environnement avec la commande :
 ```sh
 terraform destroy
 ```
