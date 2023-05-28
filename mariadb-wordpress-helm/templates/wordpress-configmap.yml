@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-configmap
+  namespace: {{ .Values.wordpress.namespace }}
+data:
+  wordpress-database-connexion: mariadb-svc.{{ .Values.mariadb.namespace }}:3306
+  wordpress-database-user: {{ .Values.wordpress.conf.database_user }}
+

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-configmap
+  namespace: {{ .Values.mariadb.namespace }}
+data:
+  mariadb-database-name: {{ .Values.mariadb.conf.database_name }}
+  mariadb-user: {{ .Values.mariadb.conf.database_user }}
+

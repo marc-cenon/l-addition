@@ -1,0 +1,44 @@
+mariadb:
+  name: mariadb
+  namespace: mariadb
+  image: mariadb:10.6  
+  ressource:
+    limit:
+      cpu: "1"
+      mem: "1Gi"
+    requests:
+      cpu: "500m"
+      mem: "512Mi"
+  volume:
+    path: /data/mariadb
+  conf:
+    database_name: wordpress
+    database_user: wordpress
+  secrets:
+    bdd_root_password: d29yZHByZXNzCg==
+    bdd_user_password: d29yZHByZXNzCg==
+  
+wordpress:
+  name: wordpress
+  namespace: wordpress
+  image: wordpress:php8.2
+  ressource:
+    limit:
+      cpu: "1"
+      mem: "1Gi"
+    requests:
+      cpu: "0.5"
+      mem: "512Mi"
+  port: 80
+  volume:
+    path: /data/wordpress
+  conf:
+    database_user: wordpress
+  secrets:
+    mariadb_password: d29yZHByZXNzCg==
+    wordpress_password: d29yZHByZXNzCg==
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 80
+

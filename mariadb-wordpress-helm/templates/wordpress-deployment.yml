@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.wordpress.name }}
+  namespace: {{ .Values.wordpress.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.wordpress.name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.wordpress.name }}
+    spec:
+      containers:
+        - name: wordpress
+          image: {{ .Values.wordpress.image }}
+          resources:
+            limits:
+              cpu: {{ .Values.wordpress.ressource.limit.cpu }}
+              memory: {{ .Values.wordpress.ressource.limit.mem }}
+            requests:
+              cpu: {{ .Values.wordpress.ressource.requests.cpu }}
+              memory: {{ .Values.wordpress.ressource.requests.cpu }}
+          ports:
+            - containerPort: {{ .Values.wordpress.port }}
+          env:
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secrets
+                  key: mysql-password
+            - name: WORDPRESS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secrets
+                  key: wordpress-password
+            - name: WORDPRESS_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-configmap
+                  key: wordpress-database-connexion
+            - name: WORDPRESS_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-configmap
+                  key: wordpress-database-user
+          volumeMounts:
+            - name: wordpress-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: wordpress-storage
+          hostPath:
+            path: {{ .Values.wordpress.volume.path }}
+            type: DirectoryOrCreate

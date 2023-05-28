@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mariadb.name }}
+  namespace: {{ .Values.mariadb.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: mariadb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: {{ .Values.mariadb.image }}
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secrets
+                  key: mariadb-root-password
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secrets
+                  key: mariadb-user-password
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-configmap
+                  key: mariadb-database-name
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-configmap
+                  key: mariadb-user
+          resources:
+            limits:
+              cpu: {{ .Values.mariadb.ressource.limit.cpu }}
+              memory: {{ .Values.mariadb.ressource.limit.mem }}
+            requests:
+              cpu: {{ .Values.mariadb.ressource.requests.cpu }}
+              memory: {{ .Values.mariadb.ressource.limit.mem }}
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mariadb-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mariadb-storage
+          hostPath:
+            path: {{ .Values.mariadb.volume.path }}
+            type: DirectoryOrCreate
